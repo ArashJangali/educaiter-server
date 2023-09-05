@@ -1,0 +1,36 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "private": true,
+  "dependencies": {
+    "@google-cloud/storage": "^6.12.0",
+    "@google-cloud/vision": "^3.1.4",
+    "bcryptjs": "^2.4.3",
+    "cartoon-avatar": "^1.0.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.8.1",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.1",
+    "mongodb": "^5.7.0",
+    "mongoose": "^7.3.4",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.1",
+    "nodemailer": "^6.9.3",
+    "nodemon": "^3.0.1",
+    "stripe": "^12.16.0",
+    "uuid": "^9.0.0",
+    "words-to-numbers": "^1.5.1"
+  },
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
