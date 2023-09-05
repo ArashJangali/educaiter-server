@@ -128,8 +128,10 @@ exports.signup = async (req, res) => {
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', 
-        sameSite: 'none' 
+        sameSite: 'None',
+        domain: 'https://educaiter-frontend.vercel.app' // replace with your production domain
       })
+      
   
   
       res.status(200).json({ token, user });
