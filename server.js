@@ -87,7 +87,7 @@ const recommendationRoutes = require('./routes/recommendationRoutes');
 
 app.use('/api/assessment', assessmentRoutes);
 app.use('/api/recommendation', recommendationRoutes);
-app.use("/api/api", authenticateToken, limiter, apiRouter);
+app.use("/api", authenticateToken, limiter, apiRouter);
 app.use("/api", userRouter);
 
 app.listen(PORT, () => console.log(`Your server is running on PORT ${PORT}`));
