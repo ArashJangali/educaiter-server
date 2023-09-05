@@ -129,7 +129,7 @@ exports.signup = async (req, res) => {
         httpOnly: true,
         secure: true, 
         sameSite: 'None',
-        domain: process.env.NODE_ENV === 'production' ? 'educaiter.com' : 'localhost',
+        domain: process.env.NODE_ENV === 'production' ? 'api.educaiter.com' : 'localhost',
         path: '/' 
       })
       
