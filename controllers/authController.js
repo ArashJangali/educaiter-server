@@ -129,11 +129,10 @@ exports.signup = async (req, res) => {
         httpOnly: true,
         secure: true, 
         sameSite: 'None',
-        domain: process.env.NODE_ENV === 'production' ? 'api.educaiter.com' : 'localhost',
+        domain: process.env.NODE_ENV === 'production' ? 'educaiter-a983a417df70.herokuapp.com' : 'localhost', // replace with your production domain
         path: '/' 
       })
       
-    
   
   
       res.status(200).json({ token, user });
