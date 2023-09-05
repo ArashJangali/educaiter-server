@@ -5,27 +5,35 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
 async function authenticateToken(req, res, next) {
+    console.log('Cookies: ', req.cookies);
     const token = req.cookies.token;
+    console.log('authenticateToken', token);
 
-    if (token == null) return res.sendStatus(401);
+    if (token == null) {
+        console.log('Token is null');
+        return res.status(401).json({ error: 'Token is null' });
+    }
 
     try {
         const decodedPayload = jwt.verify(token, process.env.SECRET_KEY);
-        // Fetch the user data from the database using the _id from the JWT payload
-        const user = await User.findById(decodedPayload._id);
-
-        console.log("Token Generated: ", token);
-        console.log("Token Expiration: ", new Date(decodedPayload.exp * 1000));
+        console.log('Decoded Payload: ', decodedPayload);
         
-        if (!user) return res.sendStatus(403);
+        const user = await User.findById(decodedPayload._id);
+        console.log('User: ', user);
 
-        req.user = user.toObject();  // Convert the user document to a plain javascript object
+        if (!user) {
+            console.log('User not found');
+            return res.status(403).json({ error: 'User not found' });
+        }
+
+        req.user = user.toObject();
         delete req.user.password;  
         next();
     } catch (err) {
-            console.log("Error in token verification: ", err.message);
-            return res.sendStatus(403);
+        console.log("Error in token verification: ", err.message);
+        return res.status(403).json({ error: err.message });
     }
 }
+
 
 module.exports = authenticateToken;
