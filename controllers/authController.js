@@ -129,7 +129,7 @@ exports.signup = async (req, res) => {
         httpOnly: true,
         secure: true, 
         sameSite: 'None',
-        domain: process.env.NODE_ENV === 'production' ? 'educaiter-frontend.vercel.app' : 'localhost', // replace with your production domain
+        domain: process.env.NODE_ENV === 'production' ? 'educaiter-a983a417df70.herokuapp.com' : 'localhost', // replace with your production domain
         path: '/' 
       })
       
