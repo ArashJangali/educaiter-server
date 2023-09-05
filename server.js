@@ -26,7 +26,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: ['https://educaiter-frontend.vercel.app', 'http://localhost:3000', ], // removed the trailing slash
+  origin: ['https://www.educaiter.com', 'https://educaiter.com', 'http://localhost:3000', ], // removed the trailing slash
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
 }));
