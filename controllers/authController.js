@@ -126,8 +126,8 @@ exports.signup = async (req, res) => {
       console.log('authcontroller token', token)
 
       res.cookie('token', token, {
-        httpOnly: false,
-        secure: false, 
+        httpOnly: true,
+        secure: true, 
         sameSite: 'None',
         domain: process.env.NODE_ENV === 'production' ? 'api.educaiter.com' : 'localhost',
         path: '/' 
