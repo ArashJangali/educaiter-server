@@ -67,9 +67,10 @@ const checkApiUsage = async (req, res, next) => {
 
 app.use(cookieParser());
 
-app.use(stripeRoute);
 
-app.use(pricingRoute)
+app.use('/api', stripeRoute);
+app.use('/api', pricingRoute);
+
 
 app.get('/api/me', authenticateToken, limiter, (req, res) => {
   const { age, email, interests, learningStyle, name, picture, subjectsOfInterest, _id, subscription } = req.user
