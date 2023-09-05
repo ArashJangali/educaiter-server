@@ -129,7 +129,8 @@ exports.signup = async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', 
         sameSite: 'None',
-        domain: 'https://educaiter-frontend.vercel.app' // replace with your production domain
+        domain: 'educaiter-frontend.vercel.app', // replace with your production domain
+        path: '/' 
       })
       
   
