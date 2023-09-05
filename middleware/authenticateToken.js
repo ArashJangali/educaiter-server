@@ -14,13 +14,17 @@ async function authenticateToken(req, res, next) {
         // Fetch the user data from the database using the _id from the JWT payload
         const user = await User.findById(decodedPayload._id);
 
+        console.log("Token Generated: ", token);
+        console.log("Token Expiration: ", new Date(decodedPayload.exp * 1000));
+        
         if (!user) return res.sendStatus(403);
 
         req.user = user.toObject();  // Convert the user document to a plain javascript object
         delete req.user.password;  
         next();
     } catch (err) {
-        return res.sendStatus(403);
+            console.log("Error in token verification: ", err.message);
+            return res.sendStatus(403);
     }
 }
 
