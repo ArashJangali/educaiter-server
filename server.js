@@ -90,4 +90,8 @@ app.use('/api/recommendation', recommendationRoutes);
 app.use("/api", authenticateToken, limiter, apiRouter);
 app.use("/api", userRouter);
 
+app.get('/', (req, res) => {
+  res.send('it works')
+})
+
 app.listen(PORT, () => console.log(`Your server is running on PORT ${PORT}`));
