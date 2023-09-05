@@ -26,7 +26,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-    origin: ['https://www.educaiter.com', 'http://localhost:3000'], // add your local frontend server port
+    origin: 'https://educaiter-frontend.vercel.app/', // add your local frontend server port
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204,
