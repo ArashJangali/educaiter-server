@@ -26,11 +26,14 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-    origin: 'https://educaiter-frontend.vercel.app/', // add your local frontend server port
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    optionsSuccessStatus: 204,
-  }));
+  origin: 'https://educaiter-frontend.vercel.app', // removed the trailing slash
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+}));
+
+
+app.options('*', cors()); // Enable preflight requests for all routes
+
   
 
 
