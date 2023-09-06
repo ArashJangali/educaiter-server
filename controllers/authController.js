@@ -132,9 +132,18 @@ exports.signup = async (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', 
         sameSite: 'Lax', 
-        domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost', 
+        domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost:8000', 
         path: '/', 
       })
+
+      
+      //  dev environment
+
+      // res.cookie('token', token, {
+      //   httpOnly: false,
+      //   secure: false, 
+      //   sameSite: 'Lax', 
+      // })
       
   
   
