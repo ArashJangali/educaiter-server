@@ -25,11 +25,16 @@ const limiter = rateLimit({
 const app = express();
 app.use(express.json());
 
+
+app.use(cookieParser());
+
 app.use(cors({
-  origin: ['https://www.educaiter.com', 'https://educaiter.com', 'http://localhost:3000', ], // removed the trailing slash
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  origin: ['https://www.educaiter.com','https://educaiter.com' ,'http://localhost:3000'], // removed the trailing slash
   credentials: true,
 }));
+
+
+
 
 
 app.options('*', cors()); // Enable preflight requests for all routes
@@ -65,7 +70,6 @@ const checkApiUsage = async (req, res, next) => {
   };
 
 
-app.use(cookieParser());
 
 
 app.use('/api', stripeRoute);
@@ -73,6 +77,7 @@ app.use('/api', pricingRoute);
 
 
 app.get('/api/me', authenticateToken, limiter, (req, res) => {
+  console.log('me')
   const { age, email, interests, learningStyle, name, picture, subjectsOfInterest, _id, subscription } = req.user
   const { planType, sessionId } = subscription
   res.json({ age, email, interests, learningStyle, name, picture, subjectsOfInterest, planType, sessionId, _id });
@@ -85,10 +90,14 @@ const assessmentRoutes = require('./routes/assessmentRoutes');
 const recommendationRoutes = require('./routes/recommendationRoutes');
 
 
+
+
 app.use('/api/assessment', assessmentRoutes);
 app.use('/api/recommendation', recommendationRoutes);
-app.use("/api", authenticateToken, limiter, apiRouter);
+app.use("/api/chat", authenticateToken, limiter, apiRouter);
+
 app.use("/api", userRouter);
+
 
 app.get('/', (req, res) => {
   res.send('it works')

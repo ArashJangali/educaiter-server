@@ -57,8 +57,11 @@ exports.signup = async (req, res) => {
   
       res.cookie('token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax' 
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: 'Lax', 
+        domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost', 
+        path: '/', 
+        
       }).status(200).json({ token, user });
   
     } catch (error) {
@@ -104,7 +107,7 @@ exports.signup = async (req, res) => {
   exports.login = async (req, res) => {
     const { email, password } = req.body;
     
-  console.log(email)
+  console.log('body')
     try {
       const user = await User.findOne({ email });
       console.log(user)
@@ -127,10 +130,10 @@ exports.signup = async (req, res) => {
 
       res.cookie('token', token, {
         httpOnly: true,
-        secure: true, 
-        sameSite: 'none',
-        domain: process.env.NODE_ENV === 'production' ? 'api.educaiter.com' : 'localhost:8000', // replace with your production domain
-        path: '/' 
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: 'Lax', 
+        domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost', 
+        path: '/', 
       })
       
   
