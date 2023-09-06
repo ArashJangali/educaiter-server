@@ -128,8 +128,8 @@ exports.signup = async (req, res) => {
       res.cookie('token', token, {
         httpOnly: true,
         secure: true, 
-        sameSite: 'None',
-        domain: process.env.NODE_ENV === 'production' ? 'educaiter-a983a417df70.herokuapp.com' : 'localhost', // replace with your production domain
+        sameSite: 'none',
+        domain: process.env.NODE_ENV === 'production' ? 'api.educaiter.com' : 'localhost:8000', // replace with your production domain
         path: '/' 
       })
       
