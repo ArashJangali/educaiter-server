@@ -136,7 +136,7 @@ exports.signup = async (req, res) => {
         path: '/', 
       })
 
-      
+
       //  dev environment
 
       // res.cookie('token', token, {
