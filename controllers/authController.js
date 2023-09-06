@@ -23,10 +23,10 @@ let transporter = nodemailer.createTransport({
 
 exports.signup = async (req, res) => {
     const { name, email, password } = req.body;
-    console.log('existingUser', req.body)
+
     try {
       const existingUser = await User.findOne({ email });
-      console.log(existingUser)
+      console.log('existingUser', existingUser)
   
       if (existingUser) {
         return res.status(400).json({ error: "User already exists." });
@@ -54,7 +54,8 @@ exports.signup = async (req, res) => {
           console.log('Email sent successfully');
         }
       });
-  
+  console.log('sent verification email')
+
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', 
@@ -62,9 +63,20 @@ exports.signup = async (req, res) => {
         domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost', 
         path: '/', 
         
+
+      //  dev environment
+
+      // res.cookie('token', token, {
+      //   httpOnly: false,
+      //   secure: false, 
+      //   sameSite: 'Lax', 
+ 
+      
       }).status(200).json({ token, user });
   
     } catch (error) {
+      console.error('Error during signup:', error.message);
+      console.error('Stack trace:', error.stack);
       res.status(500).json({ error: "Server error." });
     }
   };

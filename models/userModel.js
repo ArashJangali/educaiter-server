@@ -67,24 +67,24 @@ const userSchema = new mongoose.Schema({
     },
     planId: {
       type: String,
-      required: true
+      required: false
     },
     planType: {
       type: String,
-      required: true,
+      required: false,
       default: 'unsubscribed'
     },
     planStartDate: {
       type: String,
-      required: true
+      required: false
     },
     planEndDate: {
       type: String,
-      required: true
+      required: false
     },
     planDuration: {
       type: String,
-      required: true
+      required: false
     },
   },
   tierId: {
