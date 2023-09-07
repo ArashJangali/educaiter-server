@@ -175,7 +175,10 @@ exports.deletedSubscription = async (req, res) => {
 
   try {
     const user = await User.findById(req.user._id);
+    console.log('delete user:', user)
     if (!user || !user.subscription || !user.subscription.stripeSubscriptionId) {
+      console.log('delete user sub:', user.subscription)
+      console.log('delete user stripe sub id:', user.subscription.stripeSubscriptionId)
       return res.status(404).json({ msg: 'Subscription not found' });
     }
 
