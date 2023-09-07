@@ -65,6 +65,10 @@ const userSchema = new mongoose.Schema({
     sessionId: {
       type: String,
     },
+    stripeSubscriptionId: {
+      type: String, 
+      required: false,
+    },
     planId: {
       type: String,
       required: false

@@ -24,7 +24,7 @@ router.post("/login", limiter, authController.login);
 
 router.post("/logout", limiter, authController.logout);
 
-
+router.delete("/deleteaccount", authenticateToken, limiter, authController.deleteaccount);
 
 router.get("/users/:userId", authenticateToken, limiter, userIdValidation, checkSubscriptionExists, userController.getUser);
 

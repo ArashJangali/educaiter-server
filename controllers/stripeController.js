@@ -85,6 +85,7 @@ exports.paymentSuccess = async (req, res) => {
 
           const user = await User.findByIdAndUpdate(userId, {
             subscription: {
+              stripeSubscriptionId:  subscription.id,
               sessionId: null,
               planId: planId,
               planType: planType,
@@ -141,6 +142,7 @@ exports.handleWebhooks = async (req, res) => {
         if (subscription.status === 'active') {
           // Update user subscription data
           user.subscription = {
+              stripeSubscriptionId: subscription.id,
               planId: subscription.items.data[0].plan.id,
               planType: getPlanType(subscription.items.data[0].plan.amount),
               planStartDate: moment.unix(subscription.current_period_start).format('YYYY-MM-DD'),
@@ -149,7 +151,7 @@ exports.handleWebhooks = async (req, res) => {
           };
       } else {
           // Reset user subscription data
-          user.subscription = {};
+          user.subscription = { stripeSubscriptionId: subscription.id };
       }
   
       await user.save();
@@ -165,3 +167,29 @@ exports.handleWebhooks = async (req, res) => {
     res.status(400).send({ error: 'Webhook Error: ' + error.message });
   }
 };
+
+
+// cancel subscription function
+
+exports.deletedSubscription = async (req, res) => {
+
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user || !user.subscription || !user.subscription.stripeSubscriptionId) {
+      return res.status(404).json({ msg: 'Subscription not found' });
+    }
+
+    const deletedSubscription = await stripe.subscription.del(user.subscription.stripeSubscriptionId)
+
+    user.subscription = {};
+    await user.save();
+
+    res.status(200).json({ msg: 'Subscription cancelled successfully'});
+
+  } catch(error) {
+    console.error('Error cancelling subscription', error);
+    res.status(500).send('An error occurred while cancelling the subscription');
+  }
+  
+}
+

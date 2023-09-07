@@ -173,3 +173,23 @@ exports.signup = async (req, res) => {
     return res.status(200).json({ message: "Logged out successfully." });
   };
   
+
+
+  // delete account
+
+  exports.deleteaccount = async (req, res) => {
+    try {
+     
+      const deletedUser = await User.findByIdAndDelete(req.user._id)
+
+      if (deletedUser) {
+        res.status(200).send({ msg: 'User account deleted successfully' });
+      } else {
+        res.status(404).send({ msg: 'User not found' });
+      }
+
+    } catch(error) {
+      console.log(error)
+      res.status(500).send('An error occurred while deleting the account.')
+    }
+  }
