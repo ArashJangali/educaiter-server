@@ -18,7 +18,7 @@ router.post('/create-checkout-session', authenticateToken, limiter, stripeContro
 router.post('/payment-success', authenticateToken, limiter, stripeController.paymentSuccess);
 router.post('/webhook', bodyParser.raw({ type: 'application/json' }), stripeController.handleWebhooks);
 
-router.post('/deletedSubscription', authenticateToken, limiter, stripeController.deletedSubscription);
+router.delete('/deletedSubscription', authenticateToken, limiter, stripeController.deletedSubscription);
 
 module.exports = router;
 
