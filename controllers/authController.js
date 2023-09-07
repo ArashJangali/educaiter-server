@@ -56,20 +56,20 @@ exports.signup = async (req, res) => {
       });
   console.log('sent verification email')
 
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
-        sameSite: 'Lax', 
-        domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost', 
-        path: '/', 
+      // res.cookie('token', token, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production', 
+      //   sameSite: 'Lax', 
+      //   domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost', 
+      //   path: '/', 
         
 
       //  dev environment
 
-      // res.cookie('token', token, {
-      //   httpOnly: false,
-      //   secure: false, 
-      //   sameSite: 'Lax', 
+      res.cookie('token', token, {
+        httpOnly: false,
+        secure: false, 
+        sameSite: 'Lax', 
  
       
       }).status(200).json({ token, user });
@@ -140,22 +140,22 @@ exports.signup = async (req, res) => {
 
       console.log('authcontroller token', token)
 
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
-        sameSite: 'Lax', 
-        domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost:8000', 
-        path: '/', 
-      })
+      // res.cookie('token', token, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === 'production', 
+      //   sameSite: 'Lax', 
+      //   domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost:8000', 
+      //   path: '/', 
+      // })
 
 
       //  dev environment
 
-      // res.cookie('token', token, {
-      //   httpOnly: false,
-      //   secure: false, 
-      //   sameSite: 'Lax', 
-      // })
+      res.cookie('token', token, {
+        httpOnly: false,
+        secure: false, 
+        sameSite: 'Lax', 
+      })
       
   
   

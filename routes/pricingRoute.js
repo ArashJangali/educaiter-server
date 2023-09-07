@@ -11,13 +11,13 @@ const limiter = rateLimit({
 // Define your tiers
 const tiers = [
   {
-    "id": "price_1NilrWEZSzawTl7566rWrDUE",
+    "id": "price_1NngebEZSzawTl75rhmU0xY6",
     "name": "Basic",
     "description": "Chat conversations with AI. Tailored assessments. Personalized strength and weakness analysis. Custom-fit suggestions. Limited recommendations, flashcards, and test questions. Limited chat history analysis. No hidden charges, cancel anytime.",
     "price": 9.99,
   },
   {
-    "id": "price_1NilrWEZSzawTl75Ky3gBKyP",
+    "id": "price_1NngebEZSzawTl75jcxtEBT5",
     "name": "Premium",
     "description": "Includes all Basic tier features plus unlimited recommendations, extensive flashcards, in-depth chat history analysis, unlimited test questions, and more. No hidden charges, cancel anytime.",
     "price": 19.99,

@@ -72,9 +72,7 @@ const checkApiUsage = async (req, res, next) => {
 
 
 
-app.use('/api', (req, res, next) => {
-  console.log('you hit the striperoute endpoint.')
-}, stripeRoute);
+app.use('/api', stripeRoute);
 
 app.use('/api', pricingRoute);
 
