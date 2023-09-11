@@ -25,10 +25,25 @@ check('topic').isIn(['Computer Science', 'Mathematics', 'Design', "Digital Marke
 check('level').isIn(['Beginner', 'Intermediate', 'Advanced']),
 authenticateToken, limiter, checkSubscriptionExists, usageLimit, generateQuestion);
 
-router.post('/evaluateAnswer/:topic/:level',
-check('topic').isIn(['Computer Science', 'Mathematics', 'Design', "Digital Marketing", "Law", "Finance", "Entrepreneurship", "Accounting", "Life Science", "Physical Science", "Philosophy", "Psychology"]),
-check('level').isIn(['Beginner', 'Intermediate', 'Advanced']),
-authenticateToken, limiter, checkSubscriptionExists, usageLimit, evaluateAnswer);
+router.post('/evaluateAnswer/:topic/:level', 
+  check('topic').isIn([
+    "Software Development", 
+    "Web Development", 
+    "Mobile App Development", 
+    "Data Science & Analytics", 
+    "Machine Learning & AI", 
+    "Cloud Computing & DevOps", 
+    "Cybersecurity", 
+    "Mathematics", 
+    "Blockchain & Cryptocurrency", 
+    "Quantum Computing", 
+    "Augmented & Virtual Reality (AR/VR)", 
+    "Internet of Things (IoT)"
+  ]), 
+  check('level').isIn(['Foundational', 'Undergraduate', 'Postgraduate', 'Doctorate', 'Researcher', 'Expert', 'Master', 'Visionary']), 
+  authenticateToken, limiter, checkSubscriptionExists, usageLimit, evaluateAnswer
+);
+
 
 
 
