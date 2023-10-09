@@ -53,14 +53,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  progress: {
-    coursesCompleted: {
-      type: Number,
-    },
-    totalCourses: {
-      type: Number,
-    },
-  },
+
   subscription: {
     sessionId: {
       type: String,

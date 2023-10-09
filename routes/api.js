@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const path = require('path');
+const { Pinecone } = require('@pinecone-database/pinecone')
 require("dotenv").config();
 const { Conversation } = require("../models/messageModel");
 const { analyzeImage } = require('../controllers/imageAnalysis')
@@ -57,12 +58,14 @@ check('hasIntroduced').isBoolean(),], async (req, res) => {
   const convoId = req.body.convoId
   const role = req.body.role
   const hasIntroduced = req.body.hasIntroduced
+  console.log("Role received: ", role);
+
 
   const introduction = hasIntroduced
   ? `Act as a ${role}`
   : `Act as a ${role} and help the user in the chat. Introduce yourself. No need to provide name. Keep it short. End with asking what you can help the user with.`
   const gptMessage = `${introduction} User message: ${userContent}`
-
+console.log(gptMessage)
   
   const options = {
     method: "POST",
@@ -230,4 +233,21 @@ const requestBody = {
 })
 
 
+
+
+const pinecone = new Pinecone({
+  apiKey: process.env.PINECONE_API,
+  environment: 'gcp-starter'
+})
+
+const index = pinecone.Index('educaiter')
+
+
+
+
+
+
+
 module.exports = router;
+
+

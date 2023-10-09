@@ -9,6 +9,7 @@ const connectDB = require('./config/db')
 connectDB()
 const stripeRoute = require('./routes/stripeRoute');
 const pricingRoute = require('./routes/pricingRoute')
+const mcqRoutes = require('./routes/mcqRoutes');
 const cookieParser = require('cookie-parser')
 
 
@@ -96,7 +97,7 @@ const recommendationRoutes = require('./routes/recommendationRoutes');
 app.use('/api/assessment', assessmentRoutes);
 app.use('/api/recommendation', recommendationRoutes);
 app.use("/api/chat", authenticateToken, limiter, apiRouter);
-
+app.use('/api/mcqs', mcqRoutes);
 app.use("/api", userRouter);
 
 
