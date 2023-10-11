@@ -20,7 +20,9 @@ router.post("/signup", limiter, authController.signup);
 
 router.post("/login", limiter, authController.login);
 
+router.post("/reset-password", limiter, authController.resetPassword);
 
+router.post('/passwordChange',limiter, authController.passwordChange)
 
 router.post("/logout", limiter, authController.logout);
 
@@ -30,7 +32,7 @@ router.get("/users/:userId", authenticateToken, limiter, userIdValidation, check
 
 router.put("/users/:userId", authenticateToken, limiter, userIdValidation, checkSubscriptionExists,  userController.updateUser)
 
-
+router.put("/users/change-password/:userId", authenticateToken, limiter, userIdValidation, checkSubscriptionExists,  userController.changePass)
 
 router.get('/verify-email', limiter, authController.verifyEmail);
 

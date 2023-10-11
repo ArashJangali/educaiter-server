@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  username: {
+    type: String
+  },
   password: {
     type: String,
     required: true,
@@ -30,28 +33,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  learningStyle: {
-    type: String,
-    required: false,
-  },
-  subjectsOfInterest: {
-    type: String,
-    required: false,
-  },
-  interests: {
-    type: String,
-    required: false,
-  },
   verificationToken: {
     type: String,
   },
   emailVerified: {
     type: Boolean,
     default: false,
-  },
-  academicPerformance: {
-    type: String,
-    required: false,
   },
 
   subscription: {

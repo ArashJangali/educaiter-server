@@ -21,7 +21,7 @@ exports.getUser = async (req, res) => {
 // UPDATE user
 
 exports.updateUser = async (req, res) => {
-  console.log('req.params.userId:', req.params.userId, 'req.body:', req.body)
+  
     try {
       const user = await User.findById(req.params.userId)
 
@@ -30,7 +30,6 @@ exports.updateUser = async (req, res) => {
           req.params.userId,
           req.body,
           { new: true }
-          
       );
       console.log('updated user', updatedUser)
         res.json(updatedUser);
@@ -42,3 +41,40 @@ exports.updateUser = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+
+
+  // change Pass
+
+
+exports.changePass = async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  
+  try {
+    const user = await User.findById(req.params.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.emailVerified) {
+      return res.status(400).json({ message: "Email not verified" });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    const changedPass = await User.findByIdAndUpdate(
+      req.params.userId,
+      { password: hashedPassword },
+      { new: true }
+    );
+
+    res.json(changedPass);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
