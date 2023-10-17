@@ -19,6 +19,30 @@ let transporter = nodemailer.createTransport({
   })
   
 
+  // contact
+
+  exports.contact = async (req, res) => {
+    const { subject, email, description } = req.body;
+    console.log(email)
+    try {
+      let mailOptions = {
+        from: process.env.EMAIL,
+        to: process.env.EMAIL,
+        subject: subject,
+        text: `From: ${email} - Description: ${description}`,
+      };
+
+      transporter.sendMail(mailOptions, function (err) {
+        console.log(err);
+      });
+      res.status(200).json();
+    } catch (error) {
+      res.status(500).json({ message: "Oops! Something went wrong. Please try again later."
+    });
+    }
+  };
+
+
   // signup
 
 exports.signup = async (req, res) => {
@@ -54,6 +78,8 @@ exports.signup = async (req, res) => {
           console.log('Email sent successfully');
         }
       });
+
+
   console.log('sent verification email')
 
       res.cookie('token', token, {

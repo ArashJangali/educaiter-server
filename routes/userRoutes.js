@@ -20,6 +20,8 @@ router.post("/signup", limiter, authController.signup);
 
 router.post("/login", limiter, authController.login);
 
+router.post("/contact", limiter, authController.contact);
+
 router.post("/reset-password", limiter, authController.resetPassword);
 
 router.post('/passwordChange',limiter, authController.passwordChange)
