@@ -21,7 +21,7 @@ const limiter = rateLimit({
 router.get('/generateQuestion/:topic/:level',
 check('topic').isIn(['Computer Science', 'Mathematics', 'Design', "Digital Marketing", "Law", "Finance", "Entrepreneurship", "Accounting", "Life Science", "Physical Science", "Philosophy", "Psychology"]),
 check('level').isIn(['Beginner', 'Intermediate', 'Advanced']),
-authenticateToken, limiter, checkSubscriptionExists, usageLimit, generateQuestion);
+authenticateToken, limiter, usageLimit, generateQuestion);
 
 router.post('/evaluateAnswer/:topic/:level', 
   check('topic').isIn([
@@ -39,16 +39,16 @@ router.post('/evaluateAnswer/:topic/:level',
     "Internet of Things (IoT)"
   ]), 
   check('level').isIn(['Foundational', 'Undergraduate', 'Postgraduate', 'Doctorate', 'Researcher', 'Expert', 'Master', 'Visionary']), 
-  authenticateToken, limiter, checkSubscriptionExists, usageLimit, evaluateAnswer
+  authenticateToken, limiter, usageLimit, evaluateAnswer
 );
 
 
 
 
-router.get('/:userId', authenticateToken, limiter, userIdValidation, checkSubscriptionExists, getAssessmentsByUserId);
+router.get('/:userId', authenticateToken, limiter, userIdValidation, getAssessmentsByUserId);
 
 
-router.get('/linechart/:userId', authenticateToken, limiter, userIdValidation, checkSubscriptionExists, lineChart);
+router.get('/linechart/:userId', authenticateToken, limiter, userIdValidation, lineChart);
 
 
 

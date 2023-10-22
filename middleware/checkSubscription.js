@@ -43,16 +43,12 @@ async function usageLimit(req, res, next) {
     const decodedPayload = jwt.verify(token, process.env.SECRET_KEY);
     const user = await User.findById(decodedPayload._id);
 
-    const limits = {
-      basic: 200,
-      premium: 1000,
-    };
 
-    if (user.usageCount >= limits[user.subscription.planType]) {
-      return res.status(403).send({message: "Usage limit reached. Please upgrade."});
+    if (user.credits === 0) {
+      return res.status(403).send({message: "No credits left. Please upgrade."});
     }
 
-    user.usageCount += 1;
+    user.credits -= 20;
     await user.save();
 
     next();
@@ -69,19 +65,16 @@ async function usageLimitImageAnalysis(req, res, next) {
     const decodedPayload = jwt.verify(token, process.env.SECRET_KEY);
     const user = await User.findById(decodedPayload._id);
 
-    const limits = {
-      basic: 200,
-      premium: 500,
-    };
+
 
     // Check if the user has exceeded their limit
-    if (user.usageCount >= limits[user.subscription.planType]) {
+    if (user.credits === 0) {
       return res
         .status(403)
         .send({message: "Usage limit reached. Please upgrade."});
     }
 
-    user.usageCount += 1;
+    user.credits -= 20;
     await user.save();
 
     // If everything is fine, proceed to the next middleware or route handler

@@ -128,6 +128,8 @@ exports.signup = async (req, res) => {
         if (user.verificationToken === token) {
           user.verificationToken = undefined;
           user.emailVerified = true;
+          user.subscription.planType === "unsubscribed"
+          user.credits = 500;
           await user.save();
   
           res.redirect(302, `${FRONTEND_URL}/subscription`);

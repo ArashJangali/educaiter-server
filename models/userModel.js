@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 
 
 const userSchema = new mongoose.Schema({
-  usageCount: {
+  credits: {
     type: Number,
     default: 0,
   },
@@ -79,11 +79,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
     enum: ['active', 'inactive', 'canceled']
-  },
-  hasUsedFreeTrial: {
-    type: Boolean,
-    default: false,
-  },
+  }
 });
 
 userSchema.pre("save", async function (next) {

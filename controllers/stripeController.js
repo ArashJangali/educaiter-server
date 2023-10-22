@@ -74,14 +74,35 @@ exports.paymentSuccess = async (req, res) => {
         try {
           const subscription = await stripe.subscriptions.retrieve(subscriptionId)
           const planId = subscription.plan.id
-          let planType = ''
+          let planType = 'unsubscribed'
           
-          if(subscription.plan.amount === 999) planType = 'basic';
-          else if (subscription.plan.amount === 1999) planType = 'premium';
+          
+          if(subscription.plan.amount === 1499) planType = 'Silver Monthly';
+          else if(subscription.plan.amount === 11988) planType = 'Silver Annual';
+          else if (subscription.plan.amount === 1999) planType = 'Gold Monthly';
+          else if (subscription.plan.amount === 17988) planType = 'Gold Annual';
           const startDate = moment.unix(subscription.current_period_start).format('YYYY-MM-DD')
           const endDate = moment.unix(subscription.current_period_end).format('YYYY-MM-DD')
           const durationInSeconds = subscription.current_period_end - subscription.current_period_start
           const durationInDays = moment.duration(durationInSeconds, 'seconds').asDays()
+
+          let credits = 500;
+          switch(planType) {
+            case 'Silver Monthly':
+              credits = 6000;
+              break;
+            case 'Silver Annual':
+              credits = 72000;
+              break
+            case 'Gold Monthly':
+              credits = 12000;
+              break
+            case 'Gold Annual':
+              credits = 144000;
+              break
+            default:
+              break
+          }
 
           const user = await User.findByIdAndUpdate(userId, {
             subscription: {
@@ -92,7 +113,8 @@ exports.paymentSuccess = async (req, res) => {
               planStartDate: startDate,
               planEndDate: endDate,
               planDuration: durationInDays,
-            }
+            },
+            credits: credits
           })
         } catch(error) {
           console.error('Error retrieving subscription', error)
@@ -110,8 +132,11 @@ exports.paymentSuccess = async (req, res) => {
 
 
 function getPlanType(amount) {
-  if (amount === 999) return 'basic';
-  if (amount === 1999) return 'premium';
+  if (amount === 0) return 'Bronze';
+  if (amount === 1499) return 'Silver Monthly';
+  if (amount === 11988) return 'Silver Annual';
+  if (amount === 1999) return 'Gold Monthly';
+  if (amount === 17988) return 'Gold Annual';
   return 'unknown';
 }
 
@@ -175,16 +200,19 @@ exports.deletedSubscription = async (req, res) => {
 
   try {
     const user = await User.findById(req.user._id);
-    console.log('delete user:', user)
+
     if (!user || !user.subscription || !user.subscription.stripeSubscriptionId) {
-      console.log('delete user sub:', user.subscription)
-      console.log('delete user stripe sub id:', user.subscription.stripeSubscriptionId)
+
       return res.status(404).json({ msg: 'Subscription not found' });
     }
 
     const deletedSubscription = await stripe.subscription.del(user.subscription.stripeSubscriptionId)
 
-    user.subscription = {};
+    user.subscription = {
+      planType: 'unsubscribed',
+      stripeSubscriptionId: null
+    };
+    
     await user.save();
 
     res.status(200).json({ msg: 'Subscription cancelled successfully'});

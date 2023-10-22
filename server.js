@@ -80,8 +80,7 @@ app.use('/api', pricingRoute);
 
 app.get('/api/me', authenticateToken, limiter, (req, res) => {
   console.log('me')
-  const { age, email, interests, learningStyle, name, picture, subjectsOfInterest, _id, subscription, username, usageCount } = req.user
-  const credits = usageCount
+  const { age, email, interests, learningStyle, name, picture, subjectsOfInterest, _id, subscription, username, credits } = req.user
   const { planType, sessionId } = subscription
   res.json({ age, email, interests, learningStyle, name, picture, subjectsOfInterest, planType, sessionId, _id, username, credits });
 });
