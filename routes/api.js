@@ -34,7 +34,7 @@ const upload = multer({
 
 
 // Chat endpoint
-router.post("/completions", [ usageLimit, check('userId').notEmpty().isMongoId(),
+router.post("/completions", [checkSubscriptionExists, usageLimit, check('userId').notEmpty().isMongoId(),
 check('message').trim().escape(),
 check('role').trim().escape(),
 check('hasIntroduced').isBoolean(),], async (req, res) => {

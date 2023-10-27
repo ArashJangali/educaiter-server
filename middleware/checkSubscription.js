@@ -13,8 +13,7 @@ async function checkSubscriptionExists(req, res, next) {
     if (!user) return res.sendStatus(403); // Forbidden if user doesn't exist
 
     if (
-      !user.subscription.planType ||
-      user.subscription.planType === "unsubscribed"
+      !user.subscription.planType
     ) {
       return res
         .status(403)
