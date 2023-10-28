@@ -166,7 +166,7 @@ exports.signup = async (req, res) => {
   
       const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: "1h" });
 
-      console.log('authcontroller token', token)
+    
 
       res.cookie('token', token, {
         httpOnly: true,
@@ -185,7 +185,6 @@ exports.signup = async (req, res) => {
       //   sameSite: 'Lax', 
       // })
       
-  
   
       res.status(200).json({ token, user });
     } catch (error) {
