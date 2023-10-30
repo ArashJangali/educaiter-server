@@ -9,8 +9,9 @@ const API_KEY = process.env.API_KEY;
 exports.generateQuestion = async (req, res) => {
   const topic = req.params.topic;
   const level = req.params.level;
+  const language = req.params.language;
   
-  const content = `Act as a ${topic} teacher. Create a ${level} level question about ${topic}. Please present just the question. Not any other words.`;
+  const content = `Given the topic "${topic}" and the programming language "${language}", formulate a question suitable for a "${level}" level learner.`
   const truncatedContent = content.split(' ').slice(0, 100).join(' ');
 
   const requestBody = {
@@ -18,7 +19,7 @@ exports.generateQuestion = async (req, res) => {
     messages: [{ role: "user", content: truncatedContent }],
     max_tokens: 100,
   };
-
+console.log(requestBody)
   const options = {
     headers: {
       Authorization: `Bearer ${API_KEY}`,
@@ -41,10 +42,11 @@ exports.generateQuestion = async (req, res) => {
 exports.evaluateAnswer = async (req, res) => {
   const topic = req.params.topic;
   const level = req.params.level;
+  const language = req.params.language;
   const { userId, question, answer } = req.body;
 
   const content = `${question}\nAnswer: ${answer}\nIs this answer correct? Please only answer: 'yes' or 'no'.`;
-  const truncatedContent = content.split(' ').slice(0, 100).join(' ');
+  const truncatedContent = content.split(' ').slice(0, 200).join(' ');
 
   const requestBody = {
     model: "gpt-3.5-turbo",
@@ -74,21 +76,66 @@ exports.evaluateAnswer = async (req, res) => {
 };
 
 
-// Get all user assessments
+const aggregateQuizResult = async (userId) => {
+  return await Assessment.aggregate([
 
-exports.getAssessmentsByUserId = async(req, res) => {
-    try {
-        const userId = req.params.userId;
-       
-   
+    { $match: {} },
+
+    // Group by topic, level, and language
     
-        // Fetch assessments and return them in the response
-        const assessments = await Assessment.find({ user: userId })
-        res.json(assessments);
-      } catch (error) {
-        res.status(500).json({ message: error.message });
+    {
+      $group: {
+        _id: {
+          topic: "$topic",
+          level: "$level",
+          language: "$language"
+        },
+        totalQuestions: { $sum: 1 },
+        correctAnswers: {
+          $sum: {
+            $cond: [{$eq: ["$correct", true]}, 1, 0]
+          }
+        }
+      },
+    },
+    {
+      $project: {
+        topic: "$_id.topic",
+        level: "$_id.level",
+        language: "$_id.language",
+        totalQuestions: 1,
+        correctAnswers: 1,
+        percentageCorrect: {
+          $multiply: [{
+            $divide: ["$correctAnswers", "$totalQuestions"]
+          }, 100]
+        }
       }
+    }
+    
+  ]).exec()
 }
+
+
+// Barchart
+
+exports.getAssessmentsByUserId = async (req, res) => {
+  try {
+      const userId = req.params.userId;
+
+      // Fetch aggregated assessments
+      const results = await aggregateQuizResult(userId);
+
+      console.log('Aggregation Results:', results);
+      res.json(results);
+  } catch (error) {
+    console.error('Error while aggregating:', error);
+      res.status(500).json({ message: error.message });
+  }
+}
+
+
+
 
 exports.lineChart = async (req, res) => {
   try {

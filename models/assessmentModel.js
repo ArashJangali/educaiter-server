@@ -7,6 +7,7 @@ const assessmentSchema = new mongoose.Schema({
     },
     topic: String,
     level: String,
+    language: String,
     question: String,
     answer: String,
     correct: Boolean,
