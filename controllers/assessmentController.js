@@ -1,4 +1,5 @@
 const axios = require('axios');
+const mongoose = require('mongoose')
 const User = require("../models/userModel");
 const { Assessment } = require('../models/assessmentModel')
 require("dotenv").config();
@@ -46,7 +47,7 @@ exports.evaluateAnswer = async (req, res) => {
   const { userId, question, answer } = req.body;
 
   const content = `${question}\nAnswer: ${answer}\nIs this answer correct? Please only answer: 'yes' or 'no'.`;
-  const truncatedContent = content.split(' ').slice(0, 200).join(' ');
+  const truncatedContent = content.split(' ').slice(0, 300).join(' ');
 
   const requestBody = {
     model: "gpt-3.5-turbo",
@@ -66,7 +67,7 @@ exports.evaluateAnswer = async (req, res) => {
 
     const correct = result.data.choices[0].message.content.trim().toLowerCase() === 'yes.';
 
-    const assessment = new Assessment({ user: userId, question, answer, correct, topic, level });
+    const assessment = new Assessment({ user: userId, question, answer, correct, topic, level, language });
     await assessment.save();
     res.json({ correct });
   } catch (error) {
@@ -77,25 +78,27 @@ exports.evaluateAnswer = async (req, res) => {
 
 
 const aggregateQuizResult = async (userId) => {
-  return await Assessment.aggregate([
+  // Convert string userId to ObjectId
+  const objectId = new mongoose.Types.ObjectId(userId);
 
-    { $match: {} },
+  return await Assessment.aggregate([
+    { $match: { user: objectId } },
 
     // Group by topic, level, and language
-    
+
     {
       $group: {
         _id: {
           topic: "$topic",
           level: "$level",
-          language: "$language"
+          language: "$language",
         },
         totalQuestions: { $sum: 1 },
         correctAnswers: {
           $sum: {
-            $cond: [{$eq: ["$correct", true]}, 1, 0]
-          }
-        }
+            $cond: [{ $eq: ["$correct", true] }, 1, 0],
+          },
+        },
       },
     },
     {
@@ -106,14 +109,20 @@ const aggregateQuizResult = async (userId) => {
         totalQuestions: 1,
         correctAnswers: 1,
         percentageCorrect: {
-          $multiply: [{
-            $divide: ["$correctAnswers", "$totalQuestions"]
-          }, 100]
-        }
-      }
-    }
-    
-  ]).exec()
+          $round: [
+            {
+              $multiply: [
+                {
+                  $divide: ["$correctAnswers", "$totalQuestions"],
+                },
+                100,
+              ],
+            },
+          ],
+        },
+      },
+    },
+  ]).exec();
 }
 
 
