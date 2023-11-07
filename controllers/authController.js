@@ -78,27 +78,18 @@ exports.signup = async (req, res) => {
           console.log('Email sent successfully');
         }
       });
-
-
-  console.log('sent verification email')
+      
+      const isProduction = process.env.NODE_ENV === 'production'
 
       res.cookie('token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
+        secure: isProduction,
         sameSite: 'Lax', 
-        domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost', 
+        domain: isProduction ? 'api.educaiter.com' : undefined, 
         path: '/', 
-        
-
-      //  dev environment
-
-      // res.cookie('token', token, {
-      //   httpOnly: false,
-      //   secure: false, 
-      //   sameSite: 'Lax', 
- 
+    
       
-      }).status(200).json({ token, user });
+    }).status(200).json({ token, user });
   
     } catch (error) {
       console.error('Error during signup:', error.message);
@@ -111,15 +102,15 @@ exports.signup = async (req, res) => {
   
     exports.verifyEmail = async (req, res) => {
       const { token } = req.query;
-      console.log(token, 'token')
+
   
       try {
         const decoded = jwt.verify(token, SECRET_KEY)
-        console.log(decoded, 'decoded')
+     
   
         const user = await User.findById(decoded.userId);
 
-        console.log(user, 'user')
+     
   
         if (!user) {
           return res.status(400).json({ error: "Invalid or expired token." });
@@ -146,18 +137,17 @@ exports.signup = async (req, res) => {
   
   exports.login = async (req, res) => {
     const { email, password } = req.body;
-    
-  console.log('body')
+
     try {
       const user = await User.findOne({ email });
-      console.log(user)
+   
   
       if (!user) {
         return res.status(400).json({ error: "User not found, please sign up." });
       }
   
       const isMatch = await bcrypt.compare(password, user.password);
-      console.log(user.password)
+   
       if (!isMatch) {
         return res
           .status(400)
@@ -167,24 +157,15 @@ exports.signup = async (req, res) => {
       const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: "1h" });
 
     
+      const isProduction = process.env.NODE_ENV === 'production'
 
       res.cookie('token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
+        secure: isProduction,
         sameSite: 'Lax', 
-        domain: process.env.NODE_ENV ? 'api.educaiter.com' : 'localhost:8000', 
+        domain: isProduction ? 'api.educaiter.com' : undefined, 
         path: '/', 
       })
-
-
-      //  dev environment
-
-      // res.cookie('token', token, {
-      //   httpOnly: false,
-      //   secure: false, 
-      //   sameSite: 'Lax', 
-      // })
-      
   
       res.status(200).json({ token, user });
     } catch (error) {
@@ -195,7 +176,6 @@ exports.signup = async (req, res) => {
 
   // logout
   exports.logout = (req, res) => {
-    console.log(req)
     res.clearCookie('token');
     return res.status(200).json({ message: "Logged out successfully." });
   };

@@ -5,7 +5,6 @@ const userIdValidation = require('../middleware/userIdValidation')
 const { checkSubscriptionExists, usageLimit } = require('../middleware/checkSubscription')
 const userController = require("../controllers/userController");
 const authController = require('../controllers/authController')
-
 const rateLimit = require("express-rate-limit");
 
 
@@ -15,8 +14,8 @@ const limiter = rateLimit({
   });
 
 
-router.post("/signup", limiter, authController.signup);
 
+router.post("/signup", limiter, authController.signup);
 
 router.post("/login", limiter, authController.login);
 

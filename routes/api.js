@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const path = require('path');
-const { Pinecone } = require('@pinecone-database/pinecone')
+// const { Pinecone } = require('@pinecone-database/pinecone')
 require("dotenv").config();
 const { Conversation } = require("../models/messageModel");
 const { analyzeImage } = require('../controllers/imageAnalysis')
@@ -14,22 +14,22 @@ const { checkSubscriptionExists, usageLimit, usageLimitImageAnalysis } = require
 
 
 
-const multer = require('multer')
-const storage = multer.memoryStorage()
-const upload = multer({
-  storage: storage,
-  fileFilter: (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png/;
-    const mimetype = filetypes.test(file.mimetype);
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+// const multer = require('multer')
+// const storage = multer.memoryStorage()
+// const upload = multer({
+//   storage: storage,
+//   fileFilter: (req, file, cb) => {
+//     const filetypes = /jpeg|jpg|png/;
+//     const mimetype = filetypes.test(file.mimetype);
+//     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
-    if (mimetype && extname) {
-        return cb(null, true);
-    }
+//     if (mimetype && extname) {
+//         return cb(null, true);
+//     }
 
-    cb('Error: File upload only supports the following filetypes - ' + filetypes);
-}
-})
+//     cb('Error: File upload only supports the following filetypes - ' + filetypes);
+// }
+// })
 
 
 
@@ -65,7 +65,7 @@ check('hasIntroduced').isBoolean(),], async (req, res) => {
   ? `Act as a ${role}`
   : `Act as a ${role} and help the user in the chat. Introduce yourself. No need to provide name. Keep it short. End with asking what you can help the user with.`
   const gptMessage = `${introduction} User message: ${userContent}`
-console.log(gptMessage)
+
   
   const options = {
     method: "POST",
@@ -74,7 +74,7 @@ console.log(gptMessage)
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
       messages: [{ role: "user", content: gptMessage }],
       max_tokens: 100,
     }),
@@ -87,7 +87,7 @@ console.log(gptMessage)
         options);
     const data = await response.json();
   
-
+console.log(data)
 
       let conversation = await Conversation.findOne({ user: userId, conversationId: convoId })
       let actualConvoId = convoId;
@@ -111,136 +111,137 @@ console.log(gptMessage)
 
 
 // Image analysis
-router.post('/analyze-image', checkSubscriptionExists, usageLimitImageAnalysis, upload.single('image'), async (req, res) => {
 
-  const imageBuffer = req.file.buffer;
-  const mimeType = req.file.mimetype;
+// router.post('/analyze-image', checkSubscriptionExists, usageLimitImageAnalysis, upload.single('image'), async (req, res) => {
+
+//   const imageBuffer = req.file.buffer;
+//   const mimeType = req.file.mimetype;
  
-  try {
-    const analysisResult = await analyzeImage(imageBuffer, mimeType);
-    console.log('analysisresult:', analysisResult)
-    res.send(analysisResult);
-  } catch (error) {
-    console.error('Error analyzing image:', error);
-    res.sendStatus(500);
-}
-})
+//   try {
+//     const analysisResult = await analyzeImage(imageBuffer, mimeType);
+//     console.log('analysisresult:', analysisResult)
+//     res.send(analysisResult);
+//   } catch (error) {
+//     console.error('Error analyzing image:', error);
+//     res.sendStatus(500);
+// }
+// })
 
 
-// fetch chat history
-router.get('/chat-history/:userId', [
-  checkSubscriptionExists,
-  usageLimit,
-], async (req, res) => {
+// // fetch chat history
+// router.get('/chat-history/:userId', [
+//   checkSubscriptionExists,
+//   usageLimit,
+// ], async (req, res) => {
 
  
  
 
 
-  const userId = req.params.userId
+//   const userId = req.params.userId
 
 
-  const paramUserId = req.params.userId;
-    const authenticatedUserId = req.user._id; // the _id from the user document retrieved from the database
+//   const paramUserId = req.params.userId;
+//     const authenticatedUserId = req.user._id; // the _id from the user document retrieved from the database
     
-    if (paramUserId !== authenticatedUserId.toString()) {
-        return res.status(403).json({ msg: 'Access forbidden' });
-    }
+//     if (paramUserId !== authenticatedUserId.toString()) {
+//         return res.status(403).json({ msg: 'Access forbidden' });
+//     }
 
 
-  const searchTerm = req.query.sidebarSearch
-  const arrayOfMessages = []
+//   const searchTerm = req.query.sidebarSearch
+//   const arrayOfMessages = []
 
-  try {
+//   try {
  
-    const chatHistory = await Conversation.find({ 
-      user: userId,
-      'convo.content': { $regex: searchTerm, $options: 'i' }
-    })
-    chatHistory.map((object) => {
-      const convo = object.convo
-      const messages = convo.map(message => {
-        const singleMessages = message.content
-        arrayOfMessages.push(singleMessages)
-      })
-    })
+//     const chatHistory = await Conversation.find({ 
+//       user: userId,
+//       'convo.content': { $regex: searchTerm, $options: 'i' }
+//     })
+//     chatHistory.map((object) => {
+//       const convo = object.convo
+//       const messages = convo.map(message => {
+//         const singleMessages = message.content
+//         arrayOfMessages.push(singleMessages)
+//       })
+//     })
 
 
-    const gptMessage = `Based on the following conversation between me and you: ${arrayOfMessages}, please provide:
-Title: Generate a concise and informative title that encapsulates the main theme of the conversation.
-Topics We Discussed: Identify the main areas of knowledge or subjects that we explored.
-Your Interests: Note the areas that you seemed particularly engaged or interested in.
-Strengths: Highlight where you seemed confident or excelled.
-Areas for Improvement: Identify areas where you might need more support or exploration.
-Your Engagement Level: Assess how engaged you were in the conversation and the learning process. type: it should be a string format. NOT bulletpoint format.`;
+//     const gptMessage = `Based on the following conversation between me and you: ${arrayOfMessages}, please provide:
+// Title: Generate a concise and informative title that encapsulates the main theme of the conversation.
+// Topics We Discussed: Identify the main areas of knowledge or subjects that we explored.
+// Your Interests: Note the areas that you seemed particularly engaged or interested in.
+// Strengths: Highlight where you seemed confident or excelled.
+// Areas for Improvement: Identify areas where you might need more support or exploration.
+// Your Engagement Level: Assess how engaged you were in the conversation and the learning process. type: it should be a string format. NOT bulletpoint format.`;
 
 
 
-const options = {
-  headers: {
-    Authorization: `Bearer ${API_KEY}`,
-    "Content-Type": "application/json"
-  }
-}
+// const options = {
+//   headers: {
+//     Authorization: `Bearer ${API_KEY}`,
+//     "Content-Type": "application/json"
+//   }
+// }
 
-const requestBody = {
-  model: 'gpt-3.5-turbo',
-  messages: [{ role: 'user', content: gptMessage }],
-  max_tokens: 250,
-}
+// const requestBody = {
+//   model: 'gpt-3.5-turbo',
+//   messages: [{ role: 'user', content: gptMessage }],
+//   max_tokens: 250,
+// }
 
-    const response = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
-      requestBody,
-      options
-    );
+//     const response = await axios.post(
+//       "https://api.openai.com/v1/chat/completions",
+//       requestBody,
+//       options
+//     );
 
-    const receivedContent = response.data.choices[0].message.content.trim();
+//     const receivedContent = response.data.choices[0].message.content.trim();
 
-    const pattern = /(?:Title: )([\s\S]*?)(?:\nTopics We Discussed: )([\s\S]*?)(?:\nYour Interests: )([\s\S]*?)(?:\nStrengths: )([\s\S]*?)(?:\nAreas for Improvement: )([\s\S]*?)(?:\nYour Engagement Level: )([\s\S]*?)(?:\n|$)/;
+//     const pattern = /(?:Title: )([\s\S]*?)(?:\nTopics We Discussed: )([\s\S]*?)(?:\nYour Interests: )([\s\S]*?)(?:\nStrengths: )([\s\S]*?)(?:\nAreas for Improvement: )([\s\S]*?)(?:\nYour Engagement Level: )([\s\S]*?)(?:\n|$)/;
 
-    const match = pattern.exec(receivedContent);
+//     const match = pattern.exec(receivedContent);
   
-    if (match) {
-      const summaryOfConvos = {
-        title: match[1].trim(),
-        topics: match[2].trim(),
-        interests: match[3].trim(),
-        strengths: match[4].trim(),
-        improvementAreas: match[5].trim(),
-        engagementLevel: match[6].trim(),
-      };
-      console.log(summaryOfConvos)
-      res.status(200).json({ 
-        history: chatHistory,
-        summaryOfConvos: summaryOfConvos,
-        receivedContent: receivedContent
-      })
-    } else if(!match){
-      res.status(200).json({ 
-        receivedContent: receivedContent
-      })
-    } else {
-      // Handle the error when the pattern doesn't match
-      res.status(500).json({ error: 'An error occurred while parsing the conversation summary' });
-    } 
+//     if (match) {
+//       const summaryOfConvos = {
+//         title: match[1].trim(),
+//         topics: match[2].trim(),
+//         interests: match[3].trim(),
+//         strengths: match[4].trim(),
+//         improvementAreas: match[5].trim(),
+//         engagementLevel: match[6].trim(),
+//       };
+//       console.log(summaryOfConvos)
+//       res.status(200).json({ 
+//         history: chatHistory,
+//         summaryOfConvos: summaryOfConvos,
+//         receivedContent: receivedContent
+//       })
+//     } else if(!match){
+//       res.status(200).json({ 
+//         receivedContent: receivedContent
+//       })
+//     } else {
+//       // Handle the error when the pattern doesn't match
+//       res.status(500).json({ error: 'An error occurred while parsing the conversation summary' });
+//     } 
     
 
-  } catch(error) {
-    console.log(error)
-    res.status(500).json({ error: 'An error occurred while fetching chat history' });
-  }
-})
+//   } catch(error) {
+//     console.log(error)
+//     res.status(500).json({ error: 'An error occurred while fetching chat history' });
+//   }
+// })
 
 
 
 
-const pinecone = new Pinecone({
-  apiKey: process.env.PINECONE_API,
-  environment: 'gcp-starter'
-})
+// const pinecone = new Pinecone({
+//   apiKey: process.env.PINECONE_API,
+//   environment: 'gcp-starter'
+// })
 
-const index = pinecone.Index('educaiter')
+// const index = pinecone.Index('educaiter')
 
 
 
