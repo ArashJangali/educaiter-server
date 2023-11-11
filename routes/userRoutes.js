@@ -13,7 +13,7 @@ const limiter = rateLimit({
     max: 100, // limit each IP to 100 requests per windowMs
   });
 
-
+router.post("/social-auth", limiter, authController.socialAuth)
 
 router.post("/signup", limiter, authController.signup);
 

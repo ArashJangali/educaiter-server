@@ -5,9 +5,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 
 async function authenticateToken(req, res, next) {
-    console.log('Cookies: ', req.cookies);
+ 
     const token = req.cookies.token;
-    console.log('authenticateToken', token);
+   
 
     if (token == null) {
         console.log('Token is null');
@@ -16,10 +16,9 @@ async function authenticateToken(req, res, next) {
 
     try {
         const decodedPayload = jwt.verify(token, process.env.SECRET_KEY);
-        console.log('Decoded Payload: ', decodedPayload);
-        
+       
         const user = await User.findById(decodedPayload._id);
-        console.log('User: ', user);
+        console.log('User: ', decodedPayload._id);
 
         if (!user) {
             console.log('User not found');

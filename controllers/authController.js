@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const SECRET_KEY = process.env.SECRET_KEY;
-
+const admin = require('firebase-admin');
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
 
@@ -42,6 +42,55 @@ let transporter = nodemailer.createTransport({
     }
   };
 
+  // Firebase auth
+
+  exports.socialAuth = async (req, res) => {
+    const idToken = req.body.token || req.headers.authorization
+
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(idToken)
+      const uid = decodedToken.uid
+      
+      let user = await User.findOne({ firebaseId: uid })
+      console.log("decodedToken.email:", decodedToken.email)
+      if (!user) {
+        const existingUserByEmail = await User.findOne({ email: decodedToken.email })
+        if (existingUserByEmail) {
+          res.status(400).json({ error: "Email already in use." })
+        }
+
+        user = new User({
+          oAuth: true,
+          firebaseId: uid,
+          subscription: { planType: "unsubscribed" },
+          credits: 500,
+          email: decodedToken.email,
+          name: decodedToken.name,
+        })
+        await user.save();
+      } else {
+        user.oAuth = true
+        await user.save()
+      }
+    
+    
+      const isProduction = process.env.NODE_ENV === 'production'
+
+      const token = jwt.sign({ _id: user._id.toString()}, SECRET_KEY, {expiresIn: '1h'})
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'Lax', 
+        domain: isProduction ? 'api.educaiter.com' : undefined, 
+        path: '/', 
+      }).status(200).json({token, user})
+    } catch(error) {
+      console.error('Error during social authentication:', error);
+      res.status(500).json({ error: "Internal server error." });
+    }
+  }
+
 
   // signup
 
@@ -78,7 +127,7 @@ exports.signup = async (req, res) => {
           console.log('Email sent successfully');
         }
       });
-      
+
       const isProduction = process.env.NODE_ENV === 'production'
 
       res.cookie('token', token, {
@@ -86,10 +135,8 @@ exports.signup = async (req, res) => {
         secure: isProduction,
         sameSite: 'Lax', 
         domain: isProduction ? 'api.educaiter.com' : undefined, 
-        path: '/', 
-    
-      
-    }).status(200).json({ token, user });
+        path: '/', })
+        .status(200).json({ token, user });
   
     } catch (error) {
       console.error('Error during signup:', error.message);
@@ -106,12 +153,9 @@ exports.signup = async (req, res) => {
   
       try {
         const decoded = jwt.verify(token, SECRET_KEY)
-     
   
         const user = await User.findById(decoded.userId);
 
-     
-  
         if (!user) {
           return res.status(400).json({ error: "Invalid or expired token." });
         }
@@ -119,7 +163,8 @@ exports.signup = async (req, res) => {
         if (user.verificationToken === token) {
           user.verificationToken = undefined;
           user.emailVerified = true;
-          user.subscription.planType === "unsubscribed"
+          user.oAuth = false
+          user.subscription.planType = "unsubscribed"
           user.credits = 500;
           await user.save();
   
