@@ -52,17 +52,22 @@ let transporter = nodemailer.createTransport({
       const uid = decodedToken.uid
       
       let user = await User.findOne({ firebaseId: uid })
-      
+      console.log("decodedToken.email:", decodedToken.email)
       if (!user) {
+        const existingUserByEmail = await User.findOne({ email: decodedToken.email })
+        if (existingUserByEmail) {
+          res.status(400).json({ error: "Email already in use." })
+        }
+
         user = new User({
           oAuth: true,
           firebaseId: uid,
-          subscription: {planType: "unsubscribed"},
+          subscription: { planType: "unsubscribed" },
           credits: 500,
           email: decodedToken.email,
           name: decodedToken.name,
         })
-        
+        await user.save();
       } else {
         user.oAuth = true
         await user.save()
