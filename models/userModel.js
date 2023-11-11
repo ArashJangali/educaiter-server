@@ -8,7 +8,15 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  
+  firebaseId: {
+    required: function () {return this.oAuth},
+    unique: true,
+    sparse: true,
+    type: String
+  },
+  oAuth: {
+    type: Boolean
+  },
   email: {
     type: String,
     required: true,
@@ -19,11 +27,11 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: function () {return this.oAuth === false}
   },
   name: {
     type: String,
-    required: true,
+    required: function () {return this.oAuth === false}
   },
   age: {
     type: Number,
